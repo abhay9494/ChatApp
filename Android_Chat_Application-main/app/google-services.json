@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "699547405326",
+    "project_id": "abhashi",
+    "storage_bucket": "abhashi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:699547405326:android:6de8aa4e8488eca3b2805f",
+        "android_client_info": {
+          "package_name": "com.example.easychat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvM971_9nr-9LePaOHBnMkvuhKd9yCTK8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
