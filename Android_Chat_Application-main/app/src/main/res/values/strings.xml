@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">Abhana</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="launcher_icon_desc">Launcher Icon Description</string>
-    <string name="made_with_love">Made with ❤️ for Chandana</string>
-    <string name="server_ip">192.168.148.46</string>
-    <string name="server_port">8080</string>
-</resources>
