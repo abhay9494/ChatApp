@@ -1,4 +1,4 @@
-package com.example.easychat;
+package com.example.chatapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.example.easychat.adapter.SearchUserRecyclerAdapter;
-import com.example.easychat.model.UserModel;
-import com.example.easychat.utils.FirebaseUtil;
+import com.example.chatapp.adapter.SearchUserRecyclerAdapter;
+import com.example.chatapp.model.UserModel;
+import com.example.chatapp.utils.FirebaseUtil;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.Query;
 

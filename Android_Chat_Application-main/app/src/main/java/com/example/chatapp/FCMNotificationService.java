@@ -1,4 +1,4 @@
-package com.example.easychat;
+package com.example.chatapp;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 

@@ -1,4 +1,4 @@
-package com.example.easychat;
+package com.example.chatapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +13,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.easychat.adapter.ChatRecyclerAdapter;
-import com.example.easychat.adapter.SearchUserRecyclerAdapter;
-import com.example.easychat.model.ChatMessageModel;
-import com.example.easychat.model.ChatroomModel;
-import com.example.easychat.model.UserModel;
-import com.example.easychat.utils.AndroidUtil;
-import com.example.easychat.utils.FirebaseUtil;
+import com.example.chatapp.adapter.ChatRecyclerAdapter;
+import com.example.chatapp.adapter.SearchUserRecyclerAdapter;
+import com.example.chatapp.model.ChatMessageModel;
+import com.example.chatapp.model.ChatroomModel;
+import com.example.chatapp.model.UserModel;
+import com.example.chatapp.utils.AndroidUtil;
+import com.example.chatapp.utils.FirebaseUtil;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

@@ -1,4 +1,4 @@
-package com.example.easychat;
+package com.example.chatapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 

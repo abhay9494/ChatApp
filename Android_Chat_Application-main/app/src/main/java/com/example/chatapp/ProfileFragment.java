@@ -1,4 +1,4 @@
-package com.example.easychat;
+package com.example.chatapp;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,9 +20,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.easychat.model.UserModel;
-import com.example.easychat.utils.AndroidUtil;
-import com.example.easychat.utils.FirebaseUtil;
+import com.example.chatapp.model.UserModel;
+import com.example.chatapp.utils.AndroidUtil;
+import com.example.chatapp.utils.FirebaseUtil;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
