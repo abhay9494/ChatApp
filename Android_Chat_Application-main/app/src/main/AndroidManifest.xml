@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- storage -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- internet access -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -74,6 +79,9 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <meta-data
+            android:name="CLOUDINARY_URL"
+            android:value="cloudinary://432796185843784:eibF5lrgk0a04er0-U8MLBHsxms@dhilvyeg2"/>
         <service android:name=".FCMNotificationService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

@@ -20,56 +20,60 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.example.chatapp.model.UserModel;
 import com.example.chatapp.utils.AndroidUtil;
 import com.example.chatapp.utils.FirebaseUtil;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.storage.UploadTask;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileFragment extends Fragment {
 
+    private static boolean isMediaManagerInitialized = false;
+
     ImageView profilePic;
-    EditText usernameInput;
-    EditText phoneInput;
+    EditText usernameInput, phoneInput;
     Button updateProfileBtn;
     ProgressBar progressBar;
     TextView logoutBtn;
-
     UserModel currentUserModel;
     ActivityResultLauncher<Intent> imagePickLauncher;
     Uri selectedImageUri;
 
-    public ProfileFragment() {
-
-    }
+    public ProfileFragment() { }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialize Cloudinary Config only once
+        if (!isMediaManagerInitialized) {
+            initCloudinaryConfig();
+            isMediaManagerInitialized = true;
+        }
+
+        // Image picker launcher
         imagePickLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if(result.getResultCode() == Activity.RESULT_OK){
+                    if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
-                        if(data!=null && data.getData()!=null){
+                        if (data != null && data.getData() != null) {
                             selectedImageUri = data.getData();
-                            AndroidUtil.setProfilePic(getContext(),selectedImageUri,profilePic);
+                            AndroidUtil.setProfilePic(getContext(), selectedImageUri, profilePic);
                         }
                     }
                 }
-                );
+        );
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_profile, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
         profilePic = view.findViewById(R.id.profile_image_view);
         usernameInput = view.findViewById(R.id.profile_username);
         phoneInput = view.findViewById(R.id.profile_phone);
@@ -79,120 +83,100 @@ public class ProfileFragment extends Fragment {
 
         getUserData();
 
-        updateProfileBtn.setOnClickListener((v -> {
-            updateBtnClick();
-        }));
+        updateProfileBtn.setOnClickListener(v -> updateBtnClick());
+        logoutBtn.setOnClickListener(v -> FirebaseUtil.logout(getContext()));
 
-        logoutBtn.setOnClickListener((v)->{
-            FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        FirebaseUtil.logout();
-                        Intent intent = new Intent(getContext(),SplashActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    }
-                }
-            });
-
-
-
-        });
-
-        profilePic.setOnClickListener((v)->{
-            ImagePicker.with(this).cropSquare().compress(512).maxResultSize(512,512)
-                    .createIntent(new Function1<Intent, Unit>() {
-                        @Override
-                        public Unit invoke(Intent intent) {
-                            imagePickLauncher.launch(intent);
-                            return null;
-                        }
+        profilePic.setOnClickListener(v -> {
+            ImagePicker.with(this)
+                    .cropSquare()
+                    .compress(512)
+                    .maxResultSize(512, 512)
+                    .createIntent(intent -> {
+                        imagePickLauncher.launch(intent);
+                        return null;
                     });
         });
-
         return view;
     }
 
-    void updateBtnClick(){
+    private void updateBtnClick() {
         String newUsername = usernameInput.getText().toString();
-        if(newUsername.isEmpty() || newUsername.length()<3){
+        if (newUsername.isEmpty() || newUsername.length() < 3) {
             usernameInput.setError("Username length should be at least 3 chars");
             return;
         }
         currentUserModel.setUsername(newUsername);
         setInProgress(true);
 
+        if (selectedImageUri != null) {
+            // Upload image to Cloudinary
+            MediaManager.get().upload(selectedImageUri).callback(new UploadCallback() {
+                @Override
+                public void onSuccess(String requestId, Map resultData) {
+                    String imageUrl = resultData.get("secure_url").toString();
+                    currentUserModel.setProfileImage(imageUrl);
+                    updateToFirestore();
+                }
 
-        if(selectedImageUri!=null){
-            FirebaseUtil.getCurrentProfilePicStorageRef().putFile(selectedImageUri)
-                    .addOnCompleteListener(task -> {
-                        updateToFirestore();
-                    });
-        }else{
+                @Override
+                public void onError(String requestId, ErrorInfo error) {
+                    setInProgress(false);
+                    AndroidUtil.showToast(getContext(), "Image Upload Failed: " + error.getDescription());
+                }
+
+                @Override
+                public void onStart(String requestId) {}
+                @Override
+                public void onProgress(String requestId, long bytes, long totalBytes) {}
+                @Override
+                public void onReschedule(String requestId, ErrorInfo error) {}
+            }).dispatch();
+        } else {
             updateToFirestore();
         }
-
-
-
-
-
     }
 
-    void updateToFirestore(){
+    private void updateToFirestore() {
         FirebaseUtil.currentUserDetails().set(currentUserModel)
                 .addOnCompleteListener(task -> {
                     setInProgress(false);
-                    if(task.isSuccessful()){
-                        AndroidUtil.showToast(getContext(),"Updated successfully");
-                    }else{
-                        AndroidUtil.showToast(getContext(),"Updated failed");
+                    if (task.isSuccessful()) {
+                        AndroidUtil.showToast(getContext(), "Updated successfully");
+                    } else {
+                        AndroidUtil.showToast(getContext(), "Update failed");
                     }
                 });
     }
 
-
-
-    void getUserData(){
+    private void getUserData() {
         setInProgress(true);
-
-        FirebaseUtil.getCurrentProfilePicStorageRef().getDownloadUrl()
-                        .addOnCompleteListener(task -> {
-                                if(task.isSuccessful()){
-                                    Uri uri  = task.getResult();
-                                    AndroidUtil.setProfilePic(getContext(),uri,profilePic);
-                                }
-                        });
-
         FirebaseUtil.currentUserDetails().get().addOnCompleteListener(task -> {
             setInProgress(false);
-            currentUserModel = task.getResult().toObject(UserModel.class);
-            usernameInput.setText(currentUserModel.getUsername());
-            phoneInput.setText(currentUserModel.getPhone());
+            if (task.isSuccessful()) {
+                currentUserModel = task.getResult().toObject(UserModel.class);
+                if (currentUserModel != null) {
+                    usernameInput.setText(currentUserModel.getUsername());
+                    phoneInput.setText(currentUserModel.getPhone());
+
+                    if (currentUserModel.getProfileImage() != null) {
+                        AndroidUtil.setProfilePic(getContext(), Uri.parse(currentUserModel.getProfileImage()), profilePic);
+                    }
+                }
+            }
         });
     }
 
+    private void setInProgress(boolean inProgress) {
+        progressBar.setVisibility(inProgress ? View.VISIBLE : View.GONE);
+        updateProfileBtn.setVisibility(inProgress ? View.GONE : View.VISIBLE);
+    }
 
-    void setInProgress(boolean inProgress){
-        if(inProgress){
-            progressBar.setVisibility(View.VISIBLE);
-            updateProfileBtn.setVisibility(View.GONE);
-        }else{
-            progressBar.setVisibility(View.GONE);
-            updateProfileBtn.setVisibility(View.VISIBLE);
-        }
+    private void initCloudinaryConfig() {
+        Map<String, Object> config = new HashMap<>();
+        config.put("cloud_name", "dhilvyeg2");
+        config.put("api_key", "432796185843784");
+        config.put("api_secret", "eibF5lrgk0a04er0-U8MLBHsxms");
+
+        MediaManager.init(requireContext(), config);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

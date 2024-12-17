@@ -8,6 +8,7 @@ public class UserModel {
     private Timestamp createdTimestamp;
     private String userId;
     private String fcmToken;
+    private String profileImage;
 
     public UserModel() {
     }
@@ -17,6 +18,14 @@ public class UserModel {
         this.username = username;
         this.createdTimestamp = createdTimestamp;
         this.userId = userId;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public String getPhone() {
