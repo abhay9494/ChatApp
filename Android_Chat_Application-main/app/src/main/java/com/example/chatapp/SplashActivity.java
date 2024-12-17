@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 
 import com.example.chatapp.model.UserModel;
 import com.example.chatapp.utils.AndroidUtil;
@@ -53,6 +54,10 @@ public class SplashActivity extends AppCompatActivity {
                 }
             },2000);
         }
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
     }
 
 

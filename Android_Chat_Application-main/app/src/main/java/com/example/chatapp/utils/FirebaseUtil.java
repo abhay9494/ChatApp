@@ -1,6 +1,8 @@
 package com.example.chatapp.utils;
 
 import android.content.Context;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -27,6 +29,10 @@ public class FirebaseUtil {
     // Reference to current user's details in Firestore
     public static DocumentReference currentUserDetails() {
         return FirebaseFirestore.getInstance().collection("users").document(currentUserId());
+    }
+
+    public static DocumentReference getUserDetails(String userId) {
+        return FirebaseFirestore.getInstance().collection("users").document(userId);
     }
 
     // Reference to all users collection
@@ -85,9 +91,57 @@ public class FirebaseUtil {
     }
 
     // Reference to another user's profile picture in Firebase Storage
-    public static StorageReference getOtherProfilePicStorageRef(String otherUserId) {
-        return FirebaseStorage.getInstance().getReference()
-                .child("profile_pic")
-                .child(otherUserId);
+//    public static StorageReference getOtherProfilePicStorageRef(String otherUserId) {
+//        return FirebaseStorage.getInstance().getReference()
+//                .child("profile_pic")
+//                .child(otherUserId);
+//    }
+
+//    public static void getOtherProfilePicUrl(String userId, OnSuccessListener<String> listener) {
+//        allUserCollectionReference()
+//                .document(userId)
+//                .get()
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    if (documentSnapshot.exists()) {
+//                        String profilePicUrl = documentSnapshot.getString("profilePicUrl");
+//                        if (profilePicUrl != null) {
+//                            listener.onSuccess(profilePicUrl);
+//                        }
+//                    }
+//                });
+//    }
+
+//    public static void getOtherProfilePicUrlFromCloudinary(String userId, OnSuccessListener<String> onSuccess) {
+//        allUserCollectionReference()
+//                .document(userId)
+//                .get()
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    if (documentSnapshot.exists()) {
+//                        String cloudinaryUrl = documentSnapshot.getString("cloudinaryProfilePicUrl");
+//                        if (cloudinaryUrl != null && !cloudinaryUrl.isEmpty()) {
+//                            onSuccess.onSuccess(cloudinaryUrl);
+//                        }
+//                    }
+//                });
+//    }
+
+
+    public static void getOtherProfilePicUrl(String userId, OnSuccessListener<String> onSuccess) {
+        allUserCollectionReference()
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String profileImageUrl = documentSnapshot.getString("profileImage");
+                        if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                            onSuccess.onSuccess(profileImageUrl);
+                        }
+                    }
+                });
     }
+
+
+
+
+
 }

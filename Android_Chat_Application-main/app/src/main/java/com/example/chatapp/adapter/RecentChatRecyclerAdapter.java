@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,13 +22,12 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<ChatroomModel, RecentChatRecyclerAdapter.ChatroomModelViewHolder> {
 
     Context context;
 
-    public RecentChatRecyclerAdapter(@NonNull FirestoreRecyclerOptions<ChatroomModel> options,Context context) {
+    public RecentChatRecyclerAdapter(@NonNull FirestoreRecyclerOptions<ChatroomModel> options, Context context) {
         super(options);
         this.context = context;
     }
@@ -38,47 +36,67 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
     protected void onBindViewHolder(@NonNull ChatroomModelViewHolder holder, int position, @NonNull ChatroomModel model) {
         FirebaseUtil.getOtherUserFromChatroom(model.getUserIds())
                 .get().addOnCompleteListener(task -> {
-                        if(task.isSuccessful()){
-                            boolean lastMessageSentByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
+                    if (task.isSuccessful()) {
+                        boolean lastMessageSentByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
+
+                        // Retrieve other user model
+                        UserModel otherUserModel = task.getResult().toObject(UserModel.class);
+
+                        // Get the Cloudinary profile picture URL from Firestore
+//                        FirebaseUtil.getOtherProfilePicUrl(otherUserModel.getUserId(), profilePicUrl -> {
+//                            // Set the profile picture using Glide
+//                            AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+//                        });
+
+//                        FirebaseUtil.getOtherProfilePicUrlFromCloudinary(otherUserModel.getUserId(), profilePicUrl -> {
+//                            if (profilePicUrl != null) {
+//                                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+//                            }
+//                        });
 
 
-                            UserModel otherUserModel = task.getResult().toObject(UserModel.class);
 
-                            FirebaseUtil.getOtherProfilePicStorageRef(otherUserModel.getUserId()).getDownloadUrl()
-                                    .addOnCompleteListener(t -> {
-                                        if(t.isSuccessful()){
-                                            Uri uri  = t.getResult();
-                                            AndroidUtil.setProfilePic(context,uri,holder.profilePic);
-                                        }
-                                    });
 
-                            holder.usernameText.setText(otherUserModel.getUsername());
-                            if(lastMessageSentByMe)
-                                holder.lastMessageText.setText("You : "+model.getLastMessage());
-                            else
-                                holder.lastMessageText.setText(model.getLastMessage());
-                            holder.lastMessageTime.setText(FirebaseUtil.timestampToString(model.getLastMessageTimestamp()));
+                        // Set username
+                        holder.usernameText.setText(otherUserModel.getUsername());
 
-                            holder.itemView.setOnClickListener(v -> {
-                                //navigate to chat activity
-                                Intent intent = new Intent(context, ChatActivity.class);
-                                AndroidUtil.passUserModelAsIntent(intent,otherUserModel);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(intent);
-                            });
+                        // Set last message with condition
+                        if (lastMessageSentByMe)
+                            holder.lastMessageText.setText("You : " + model.getLastMessage());
+                        else
+                            holder.lastMessageText.setText(model.getLastMessage());
 
-                        }
+                        // Set last message time
+                        holder.lastMessageTime.setText(FirebaseUtil.timestampToString(model.getLastMessageTimestamp()));
+
+                        FirebaseUtil.getOtherProfilePicUrl(otherUserModel.getUserId(), profilePicUrl -> {
+                            if (profilePicUrl != null) {
+                                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+                            }
+//                            else {
+//                                holder.profilePic.setImageResource(R.drawable.default_profile_pic);
+//                            }
+                        });
+
+                        // Navigate to ChatActivity on click
+                        holder.itemView.setOnClickListener(v -> {
+                            Intent intent = new Intent(context, ChatActivity.class);
+                            AndroidUtil.passUserModelAsIntent(intent, otherUserModel);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                        });
+                    }
                 });
     }
 
     @NonNull
     @Override
     public ChatroomModelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.recent_chat_recycler_row,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.recent_chat_recycler_row, parent, false);
         return new ChatroomModelViewHolder(view);
     }
 
-    class ChatroomModelViewHolder extends RecyclerView.ViewHolder{
+    class ChatroomModelViewHolder extends RecyclerView.ViewHolder {
         TextView usernameText;
         TextView lastMessageText;
         TextView lastMessageTime;

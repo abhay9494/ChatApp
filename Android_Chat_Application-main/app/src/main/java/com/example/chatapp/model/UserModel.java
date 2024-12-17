@@ -9,6 +9,7 @@ public class UserModel {
     private String userId;
     private String fcmToken;
     private String profileImage;
+    private String profilePicUrl;
 
     public UserModel() {
     }
@@ -66,5 +67,13 @@ public class UserModel {
 
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    public String getProfilePicUrl() {
+        return profilePicUrl;
+    }
+
+    public void setProfilePicUrl(String profilePicUrl) {
+        this.profilePicUrl = profilePicUrl;
     }
 }

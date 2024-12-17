@@ -37,13 +37,32 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<UserMode
             holder.usernameText.setText(model.getUsername()+" (Me)");
         }
 
-        FirebaseUtil.getOtherProfilePicStorageRef(model.getUserId()).getDownloadUrl()
-                .addOnCompleteListener(t -> {
-                    if(t.isSuccessful()){
-                        Uri uri  = t.getResult();
-                        AndroidUtil.setProfilePic(context,uri,holder.profilePic);
-                    }
-                });
+//        FirebaseUtil.getOtherProfilePicStorageRef(model.getUserId()).getDownloadUrl()
+//                .addOnCompleteListener(t -> {
+//                    if(t.isSuccessful()){
+//                        Uri uri  = t.getResult();
+//                        AndroidUtil.setProfilePic(context,uri,holder.profilePic);
+//                    }
+//                });
+
+//        FirebaseUtil.getOtherProfilePicUrl(model.getUserId(), profilePicUrl -> {
+//            AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+//        });
+
+//        FirebaseUtil.getOtherProfilePicUrlFromCloudinary(model.getUserId(), profilePicUrl -> {
+//            if (profilePicUrl != null) {
+//                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+//            }
+//        });
+
+        FirebaseUtil.getOtherProfilePicUrl(model.getUserId(), profilePicUrl -> {
+            if (profilePicUrl != null) {
+                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+            }
+        });
+
+
+
 
         holder.itemView.setOnClickListener(v -> {
             //navigate to chat activity
