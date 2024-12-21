@@ -171,12 +171,5 @@ public class ProfileFragment extends Fragment {
         updateProfileBtn.setVisibility(inProgress ? View.GONE : View.VISIBLE);
     }
 
-    private void initCloudinaryConfig() {
-        Map<String, Object> config = new HashMap<>();
-        config.put("cloud_name", "dhilvyeg2");
-        config.put("api_key", "432796185843784");
-        config.put("api_secret", "eibF5lrgk0a04er0-U8MLBHsxms");
-
-        MediaManager.init(requireContext(), config);
-    }
+    
 }
