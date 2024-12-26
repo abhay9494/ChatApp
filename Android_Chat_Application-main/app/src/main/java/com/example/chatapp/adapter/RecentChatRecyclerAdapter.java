@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.chatapp.ChatActivity;
 import com.example.chatapp.R;
 import com.example.chatapp.model.ChatroomModel;
@@ -42,21 +44,6 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
                         // Retrieve other user model
                         UserModel otherUserModel = task.getResult().toObject(UserModel.class);
 
-                        // Get the Cloudinary profile picture URL from Firestore
-//                        FirebaseUtil.getOtherProfilePicUrl(otherUserModel.getUserId(), profilePicUrl -> {
-//                            // Set the profile picture using Glide
-//                            AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
-//                        });
-
-//                        FirebaseUtil.getOtherProfilePicUrlFromCloudinary(otherUserModel.getUserId(), profilePicUrl -> {
-//                            if (profilePicUrl != null) {
-//                                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
-//                            }
-//                        });
-
-
-
-
                         // Set username
                         holder.usernameText.setText(otherUserModel.getUsername());
 
@@ -71,7 +58,12 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
 
                         FirebaseUtil.getOtherProfilePicUrl(otherUserModel.getUserId(), profilePicUrl -> {
                             if (profilePicUrl != null) {
-                                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+                                Glide.with(context)
+                                        .load(profilePicUrl)
+                                        .apply(RequestOptions.circleCropTransform()) // Circular crop
+                                        .placeholder(R.drawable.person_icon) // Placeholder if no image
+                                        .error(R.drawable.person_icon) // Fallback in case of error
+                                        .into(holder.profilePic);
                             }
 //                            else {
 //                                holder.profilePic.setImageResource(R.drawable.default_profile_pic);

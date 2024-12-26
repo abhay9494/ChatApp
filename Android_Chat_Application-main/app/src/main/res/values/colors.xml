@@ -11,5 +11,6 @@
     <color name="chat_color_receiver">#A0FF56</color>
     <color name="high_contrast_color">#FF000000</color>
     <color name="ccp_text_color">#000000</color>
+    <color name="secondary_on_splash">#240054</color>
 
 </resources>

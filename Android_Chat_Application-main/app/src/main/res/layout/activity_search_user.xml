@@ -46,8 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/edit_text_rounded_corner"
-            android:layout_margin="10dp"
-            android:hint="Username"
+            android:layout_margin="5dp"
+            android:hint="Username (e.g. - Abhay, Abhi)"
             android:padding="10dp"
             android:elevation="4dp"
             android:layout_toLeftOf="@id/search_user_btn"
@@ -60,9 +60,9 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="@color/my_primary"
+            app:tint="@color/secondary_on_splash"
             android:padding="4dp"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:id="@+id/search_user_btn"/>
 
     </RelativeLayout>

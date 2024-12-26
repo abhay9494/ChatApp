@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.chatapp.ChatActivity;
 import com.example.chatapp.R;
 import com.example.chatapp.model.UserModel;
@@ -31,38 +32,25 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<UserMode
 
     @Override
     protected void onBindViewHolder(@NonNull UserModelViewHolder holder, int position, @NonNull UserModel model) {
-        holder.usernameText.setText(model.getUsername());
-        holder.phoneText.setText(model.getPhone());
+        if (holder.usernameText != null) {
+            holder.usernameText.setText(model.getUsername());
+        }
+        if (holder.emailText != null) {
+            holder.emailText.setText(model.getEmail());
+        }
         if(model.getUserId().equals(FirebaseUtil.currentUserId())){
             holder.usernameText.setText(model.getUsername()+" (Me)");
         }
 
-//        FirebaseUtil.getOtherProfilePicStorageRef(model.getUserId()).getDownloadUrl()
-//                .addOnCompleteListener(t -> {
-//                    if(t.isSuccessful()){
-//                        Uri uri  = t.getResult();
-//                        AndroidUtil.setProfilePic(context,uri,holder.profilePic);
-//                    }
-//                });
-
-//        FirebaseUtil.getOtherProfilePicUrl(model.getUserId(), profilePicUrl -> {
-//            AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
-//        });
-
-//        FirebaseUtil.getOtherProfilePicUrlFromCloudinary(model.getUserId(), profilePicUrl -> {
-//            if (profilePicUrl != null) {
-//                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
-//            }
-//        });
-
         FirebaseUtil.getOtherProfilePicUrl(model.getUserId(), profilePicUrl -> {
             if (profilePicUrl != null) {
-                AndroidUtil.setProfilePic(context, Uri.parse(profilePicUrl), holder.profilePic);
+                Glide.with(context)
+                        .load(profilePicUrl)
+                        .circleCrop() // Make the image circular
+                        .placeholder(R.drawable.person_icon) // Optional placeholder image
+                        .into(holder.profilePic);
             }
         });
-
-
-
 
         holder.itemView.setOnClickListener(v -> {
             //navigate to chat activity
@@ -82,13 +70,13 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<UserMode
 
     class UserModelViewHolder extends RecyclerView.ViewHolder{
         TextView usernameText;
-        TextView phoneText;
+        TextView emailText;
         ImageView profilePic;
 
         public UserModelViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameText = itemView.findViewById(R.id.user_name_text);
-            phoneText = itemView.findViewById(R.id.phone_text);
+            emailText = itemView.findViewById(R.id.email_text);
             profilePic = itemView.findViewById(R.id.profile_pic_image_view);
         }
     }

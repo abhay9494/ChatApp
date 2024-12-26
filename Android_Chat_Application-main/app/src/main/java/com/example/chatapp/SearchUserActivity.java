@@ -87,15 +87,3 @@ public class SearchUserActivity extends AppCompatActivity {
             adapter.startListening();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

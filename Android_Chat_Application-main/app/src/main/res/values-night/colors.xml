@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="my_primary">#212030</color>
+    <color name="my_primary">#240054</color>
     <color name="my_secondary">#3c3c79</color>
     <color name="black">#FFFFFF</color> <!-- Inverted for better visibility in night mode -->
     <color name="white">#121212</color> <!-- Dark theme background -->
@@ -9,4 +9,5 @@
     <color name="chat_color_sender">#808080</color>
     <color name="chat_color_receiver">#075E54</color>
     <color name="ccp_text_color">#FFFFFF</color> <!-- White for dark mode -->
+    <color name="secondary_on_splash">#7b56e1</color>
 </resources>

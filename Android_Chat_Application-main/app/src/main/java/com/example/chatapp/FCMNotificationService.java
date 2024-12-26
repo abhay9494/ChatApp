@@ -46,11 +46,16 @@ public class FCMNotificationService extends FirebaseMessagingService {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {100, 300, 300, 300};
         v.vibrate(pattern, -1);
+//        int resourseImage = getResources().getIdentifier(remoteMessage.getNotification().getIcon(),
+//                "drawable", getPackageName());
+
+
 
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID");
-        builder.setSmallIcon(R.drawable.ic_launcher_foreground);
+        builder.setSmallIcon(R.mipmap.ic_launcher_foreground);
+
         Intent resultIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 1,
                 resultIntent, PendingIntent.FLAG_MUTABLE);
@@ -59,9 +64,9 @@ public class FCMNotificationService extends FirebaseMessagingService {
         builder.setContentTitle(remoteMessage.getNotification().getTitle());
         builder.setContentText(remoteMessage.getNotification().getBody());
         builder.setContentIntent(pendingIntent);
-        builder.setStyle(new NotificationCompat. BigTextStyle().bigText (remoteMessage.getNotification().getBody()));
+        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getNotification().getBody()));
         builder.setAutoCancel(true);
-        builder.setPriority (Notification.PRIORITY_MAX);
+        builder.setPriority(Notification.PRIORITY_MAX);
 
 
 

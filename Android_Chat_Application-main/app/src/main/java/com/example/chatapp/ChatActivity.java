@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.chatapp.adapter.ChatRecyclerAdapter;
 import com.example.chatapp.model.ChatMessageModel;
 import com.example.chatapp.adapter.SearchUserRecyclerAdapter;
@@ -92,27 +93,13 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.chat_recycler_view);
         imageView = findViewById(R.id.profile_pic_image_view);
 
-//        FirebaseUtil.getOtherProfilePicStorageRef(otherUser.getUserId()).getDownloadUrl()
-//                .addOnCompleteListener(t -> {
-//                    if(t.isSuccessful()){
-//                        Uri uri  = t.getResult();
-//                        AndroidUtil.setProfilePic(this,uri,imageView);
-//                    }
-//                });
-
-//        FirebaseUtil.getOtherProfilePicUrl(otherUser.getUserId(), profilePicUrl -> {
-//            AndroidUtil.setProfilePic(this, Uri.parse(profilePicUrl), imageView);
-//        });
-
-//        FirebaseUtil.getOtherProfilePicUrlFromCloudinary(otherUser.getUserId(), profilePicUrl -> {
-//            if (profilePicUrl != null) {
-//                AndroidUtil.setProfilePic(this, Uri.parse(profilePicUrl), imageView);
-//            }
-//        });
-
         FirebaseUtil.getOtherProfilePicUrl(otherUser.getUserId(), profilePicUrl -> {
             if (profilePicUrl != null) {
-                AndroidUtil.setProfilePic(this, Uri.parse(profilePicUrl), imageView);
+                Glide.with(this)
+                        .load(profilePicUrl)
+                        .circleCrop() // Make the image circular
+                        .placeholder(R.drawable.person_icon) // Optional placeholder image
+                        .into(imageView);
             }
         });
 
@@ -150,9 +137,8 @@ public class ChatActivity extends AppCompatActivity {
             receiverId = userIds[0];
         }
 
-        // Debug log to verify the IDs
-        Log.d("ChatActivity", "Sender ID: " + senderId);
-        Log.d("ChatActivity", "Receiver ID: " + receiverId);
+//        Log.d("ChatActivity", "Sender ID: " + senderId);
+//        Log.d("ChatActivity", "Receiver ID: " + receiverId);
     }
 
     private void openFilePicker() {
@@ -245,62 +231,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-//    void sendNotification(String message){
-//
-//        FirebaseUtil.currentUserDetails().get().addOnCompleteListener(task -> {
-//            if(task.isSuccessful()){
-//                UserModel currentUser = task.getResult().toObject(UserModel.class);
-//                try{
-//                    JSONObject jsonObject  = new JSONObject();
-//
-//                    JSONObject notificationObj = new JSONObject();
-//                    notificationObj.put("title",currentUser.getUsername());
-//                    notificationObj.put("body",message);
-//
-//                    JSONObject dataObj = new JSONObject();
-//                    dataObj.put("userId",currentUser.getUserId());
-//
-//                    jsonObject.put("notification",notificationObj);
-//                    jsonObject.put("data",dataObj);
-//                    jsonObject.put("to",otherUser.getFcmToken());
-//
-//                    callApi(jsonObject);
-//
-//
-//                }catch (Exception e){
-//
-//                }
-//
-//            }
-//        });
-//
-//    }
-//
-//    void callApi(JSONObject jsonObject){
-//        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-//        OkHttpClient client = new OkHttpClient();
-//        String url = "https://fcm.googleapis.com/fcm/send";
-//        RequestBody body = RequestBody.create(jsonObject.toString(),JSON);
-//        Request request = new Request.Builder()
-//                .url(url)
-//                .post(body)
-//                .header("Authorization","Bearer YOUR_API_KEY")
-//                .build();
-//        client.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-//
-//            }
-//
-//            @Override
-//            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-//
-//            }
-//        });
-//
-//    }
-
-
     public void sendNotification(String messageSMS) {
         String currentUserId = FirebaseUtil.currentUserId();
         String receiverId = getReceiverId(chatroomId, currentUserId);
@@ -341,20 +271,4 @@ public class ChatActivity extends AppCompatActivity {
             return userIds[0];
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

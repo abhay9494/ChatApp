@@ -3,12 +3,31 @@ plugins {
 //    id 'com.google.gms.google-services'
 }
 
+// Load sensitive data from local.properties
+def localProperties = new Properties()
+def localFile = rootProject.file('local.properties')
+if (localFile.exists()) {
+    localProperties.load(new FileInputStream(localFile))
+}
+
 android {
     namespace 'com.example.chatapp'
     compileSdk 34
 
-    packagingOptions{
-        exclude("META-INF/DEPENDENCIES")
+    packagingOptions {
+        resources {
+            excludes += [
+                    "META-INF/NOTICE.md",       // Exclude conflicting NOTICE.md file
+                    "META-INF/LICENSE.md",      // Exclude LICENSE.md
+                    "META-INF/DEPENDENCIES",    // Exclude other common conflicts
+                    "META-INF/DEPENDENCIES.txt",
+                    "META-INF/LICENSE",
+                    "META-INF/LICENSE.txt",
+                    "META-INF/NOTICE",
+                    "META-INF/NOTICE.txt",
+                    "META-INF/INDEX.LIST"
+            ]
+        }
     }
 
     defaultConfig {
@@ -19,6 +38,17 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Add sensitive data from local.properties as BuildConfig fields
+        buildConfigField "String", "CLOUDINARY_CLOUD_NAME", "\"${localProperties.getProperty('CLOUDINARY_CLOUD_NAME')}\""
+        buildConfigField "String", "CLOUDINARY_API_KEY", "\"${localProperties.getProperty('CLOUDINARY_API_KEY')}\""
+        buildConfigField "String", "CLOUDINARY_API_SECRET", "\"${localProperties.getProperty('CLOUDINARY_API_SECRET')}\""
+        buildConfigField "String", "SMTP_EMAIL", "\"${localProperties.getProperty('SMTP_EMAIL')}\""
+        buildConfigField "String", "SMTP_PASSWORD", "\"${localProperties.getProperty('SMTP_PASSWORD')}\""
+
+        // Inject Cloudinary values into the manifest
+        manifestPlaceholders = [
+                cloudinaryUrl: "cloudinary://${localProperties.getProperty('CLOUDINARY_API_KEY')}:${localProperties.getProperty('CLOUDINARY_API_SECRET')}@${localProperties.getProperty('CLOUDINARY_CLOUD_NAME')}"
+        ]
     }
 
     buildTypes {
@@ -32,15 +62,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/INDEX.LIST'
-    }
 }
 
 dependencies {
@@ -74,9 +95,20 @@ dependencies {
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
     implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.github.yalantis:ucrop:2.2.8'
     implementation 'com.cloudinary:cloudinary-android:3.0.2'
 
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
+
+    implementation 'com.sun.mail:android-mail:1.6.7'
+    implementation 'com.sun.mail:android-activation:1.6.7'
+    implementation 'com.google.android.gms:play-services-base:18.5.0'
+    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+    implementation 'com.google.android.gms:play-services-basement:18.5.0'
+
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+
 }
 
+// Apply Google Services plugin
 apply plugin: 'com.google.gms.google-services'

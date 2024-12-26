@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +23,7 @@ public class LoginUsernameActivity extends AppCompatActivity {
     EditText usernameInput;
     Button letMeInBtn;
     ProgressBar progressBar;
-    String phoneNumber;
+    String email;
     UserModel userModel;
 
     @Override
@@ -32,67 +33,80 @@ public class LoginUsernameActivity extends AppCompatActivity {
 
         usernameInput = findViewById(R.id.login_username);
         letMeInBtn = findViewById(R.id.login_let_me_in_btn);
-        progressBar =findViewById(R.id.login_progress_bar);
+        progressBar = findViewById(R.id.login_progress_bar);
 
-        phoneNumber = getIntent().getExtras().getString("phone");
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey("email")) {
+            email = getIntent().getExtras().getString("email");
+        } else {
+            Log.e("LoginUsernameActivity", "Email not provided in the intent. Redirecting to LoginActivity.");
+            redirectToLogin();
+            return;
+        }
+
+        if (FirebaseUtil.currentUserId() == null) {
+            Log.e("LoginUsernameActivity", "User is not authenticated. Redirecting to LoginEmailActivity.");
+            redirectToLogin();
+            return;
+        }
+
         getUsername();
 
-        letMeInBtn.setOnClickListener((v -> {
-            setUsername();
-        }));
-
-
+        letMeInBtn.setOnClickListener(v -> setUsername());
     }
 
-    void setUsername(){
+    private void redirectToLogin() {
+        Intent intent = new Intent(LoginUsernameActivity.this, LoginEmailActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
 
+    void setUsername() {
         String username = usernameInput.getText().toString();
-        if(username.isEmpty() || username.length()<3){
+        if (username.isEmpty() || username.length() < 3) {
             usernameInput.setError("Username length should be at least 3 chars");
             return;
         }
         setInProgress(true);
-        if(userModel!=null){
+        if (userModel != null) {
             userModel.setUsername(username);
-        }else{
-            userModel = new UserModel(phoneNumber,username, Timestamp.now(),FirebaseUtil.currentUserId());
+        } else {
+            userModel = new UserModel(email, username, Timestamp.now(), FirebaseUtil.currentUserId());
         }
 
-        FirebaseUtil.currentUserDetails().set(userModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                setInProgress(false);
-                if(task.isSuccessful()){
-                   Intent intent = new Intent(LoginUsernameActivity.this,MainActivity.class);
-                   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK );
-                   startActivity(intent);
-                }
+        FirebaseUtil.currentUserDetails().set(userModel).addOnCompleteListener(task -> {
+            setInProgress(false);
+            if (task.isSuccessful()) {
+                Intent intent = new Intent(LoginUsernameActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                usernameInput.setError("Something went wrong. Try again");
+                Log.e("LoginUsernameActivity", "Firebase write failed: " + task.getException().getMessage());
             }
         });
-
     }
 
-    void getUsername(){
+    void getUsername() {
         setInProgress(true);
-        FirebaseUtil.currentUserDetails().get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                setInProgress(false);
-                if(task.isSuccessful()){
-                  userModel =    task.getResult().toObject(UserModel.class);
-                 if(userModel!=null){
-                     usernameInput.setText(userModel.getUsername());
-                 }
+        FirebaseUtil.currentUserDetails().get().addOnCompleteListener(task -> {
+            setInProgress(false);
+            if (task.isSuccessful() && task.getResult() != null) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                userModel = documentSnapshot.toObject(UserModel.class);
+                if (userModel != null && userModel.getUsername() != null) {
+                    Intent intent = new Intent(LoginUsernameActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
     }
 
-    void setInProgress(boolean inProgress){
-        if(inProgress){
+    void setInProgress(boolean inProgress) {
+        if (inProgress) {
             progressBar.setVisibility(View.VISIBLE);
             letMeInBtn.setVisibility(View.GONE);
-        }else{
+        } else {
             progressBar.setVisibility(View.GONE);
             letMeInBtn.setVisibility(View.VISIBLE);
         }

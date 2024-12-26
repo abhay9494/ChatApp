@@ -47,8 +47,10 @@ public class SendNotification {
             mainObj.put("message", messageObject);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, postUrl, mainObj, response -> {
                 // code run got response
+//                Toast.makeText(context, "Notification send", Toast.LENGTH_SHORT).show();
             }, volleyError -> {
                 // code run error
+//                Toast.makeText(context, "Failed to send notification", Toast.LENGTH_SHORT).show();
             }) {
 
                 @NonNull @Override

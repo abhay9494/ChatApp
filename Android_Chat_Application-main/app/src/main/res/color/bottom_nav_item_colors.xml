@@ -1,0 +1,7 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Selected state: Using secondary_on_splash color -->
+    <item android:color="@color/secondary_on_splash" android:state_checked="true"/>
+    
+    <!-- Unselected state: Using light_gray color -->
+    <item android:color="@color/light_gray" android:state_checked="false"/>
+</selector>
