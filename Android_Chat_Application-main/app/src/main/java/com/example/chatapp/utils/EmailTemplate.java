@@ -8,7 +8,7 @@ public class EmailTemplate {
                         "<body style='font-family: Arial, sans-serif; text-align: center; padding: 40px; background-color: #f4f4f9; color: #333;'>" +
                         "<div style='border: 1px solid #ddd; border-radius: 15px; max-width: 450px; margin: auto; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden;'>" +
                         "<div style='background-color: #F2F2F2; padding: 20px;'>" +
-                        "<img src='https://res.cloudinary.com/dhilvyeg2/image/upload/v1734852323/launcher_icon-removebg-preview_r6vnfo.png' alt='App Logo' style='width: 70px; height: 70px; margin-bottom: 10px;' />" +
+                        "<img src='https://res.cloudinary.com/chatapp-by-abhay/image/upload/v1734852323/launcher_icon-removebg-preview_r6vnfo.png' alt='App Logo' style='width: 70px; height: 70px; margin-bottom: 10px;' />" +
                         "<h1 style='font-size: 24px; color: #7b56e1; margin: 0;'>ChatApp</h1>" +
                         "</div>" +
                         "<div style='padding: 20px;'>" +

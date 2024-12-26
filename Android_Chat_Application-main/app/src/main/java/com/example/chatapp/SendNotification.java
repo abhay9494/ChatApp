@@ -23,7 +23,7 @@ public class SendNotification {
     private final String body;
     private final Context context;
 
-    private final String postUrl = "https://fcm.googleapis.com/v1/projects/chat-app-by-abhi/messages:send";
+    private final String postUrl = "https://fcm.googleapis.com/v1/projects/chatapp-by-abhay/messages:send";
 
 
     public SendNotification(String userFcmToken, String title, String body, Context context) {
